@@ -1,24 +1,18 @@
 package com.example.root.villagedesigner;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
+import android.graphics.PointF;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 
-import com.example.root.villagedesigner.views.SPalette;
-
-import java.util.ArrayList;
+import com.example.root.villagedesigner.views.Palette;
 
 public class VillageActivity extends AppCompatActivity implements View.OnTouchListener {
 
-    SPalette P;
+    Palette P;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +23,7 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
         Bundle extras = getIntent().getExtras();
         int drawable_id = Integer.parseInt(extras.getString("drawable_id"));
 
-        P = new SPalette(VillageActivity.this, drawable_id);
+        P = new Palette(VillageActivity.this, drawable_id);
         this.setContentView(P);
         P.setOnTouchListener(this);
     }
@@ -62,16 +56,18 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
 
         switch(me.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                P.x = me.getX() - 100;
-                P.y = me.getY() + 100;
+                PointF loc = new PointF(me.getX(), me.getY());
+                //P.location = loc;
+                P.getIsometricTouchLocation(loc);
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d("touch", "touched");
                 //P.placeInVillage();
                 break;
             case MotionEvent.ACTION_MOVE:
-                P.x = me.getX() - 100;
-                P.y = me.getY() + 100;
+                loc = new PointF(me.getX(), me.getY());
+                //P.location = loc;
+                P.getIsometricTouchLocation(loc);
                 break;
         }
 
@@ -83,6 +79,6 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        P.addToDb();
+        P.saveToDb();
     }
 }

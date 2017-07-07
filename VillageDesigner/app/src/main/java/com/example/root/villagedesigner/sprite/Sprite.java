@@ -17,6 +17,8 @@ public class Sprite {
     public Bitmap bitmap;
     public Bitmap bitmap_scaled;
     public int zorder;
+    public String type;
+    public int drawable_id;
 
     Bitmap getBitmap(int id) {
         return BitmapFactory.decodeResource(mContext.getResources(), id);
@@ -26,6 +28,7 @@ public class Sprite {
 
         this.mContext = context;
         this.bitmap = this.getBitmap(id);
+        this.drawable_id = id;
 
     }
 
