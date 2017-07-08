@@ -14,36 +14,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="284px"
-            android:layout_height="278px"
-            android:src="@drawable/house_1"
-            android:id="@+id/house_1" />
-
-        <ImageView
-            android:layout_width="284px"
-            android:layout_height="278px"
-            android:src="@drawable/house_2"
-            android:id="@+id/house_2" />
-
-        <ImageView
-            android:layout_width="284px"
-            android:layout_height="278px"
-            android:src="@drawable/house_3"
-            android:id="@+id/house_3" />
-
-        <ImageView
-            android:layout_width="284px"
-            android:layout_height="278px"
-            android:src="@drawable/house_4"
-            android:id="@+id/house_4" />
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical">
         <Button
             android:layout_width="wrap_content"
@@ -52,4 +22,113 @@
             android:text="Clear DB"
             android:id="@+id/clearDBBtn" />
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/house_1"
+                android:id="@+id/house_1" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/house_2"
+                android:id="@+id/house_2" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/house_3"
+                android:id="@+id/house_3" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/house_4"
+                android:id="@+id/house_4" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_1"
+                android:id="@+id/road_1" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_2"
+                android:id="@+id/road_2" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_3"
+                android:id="@+id/road_3" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_4"
+                android:id="@+id/road_4" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_5"
+                android:id="@+id/road_5" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_6"
+                android:id="@+id/road_6" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_7"
+                android:id="@+id/road_7" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_8"
+                android:id="@+id/road_8" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_9"
+                android:id="@+id/road_9" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="82px"
+                android:src="@drawable/road_10"
+                android:id="@+id/road_10" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/trees_1"
+                android:id="@+id/trees_1" />
+
+            <ImageView
+                android:layout_width="142px"
+                android:layout_height="132px"
+                android:src="@drawable/water"
+                android:id="@+id/water" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>

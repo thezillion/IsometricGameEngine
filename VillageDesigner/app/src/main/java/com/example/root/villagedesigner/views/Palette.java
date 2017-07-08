@@ -2,12 +2,9 @@ package com.example.root.villagedesigner.views;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -16,17 +13,12 @@ import android.view.SurfaceView;
 
 import com.example.root.villagedesigner.R;
 import com.example.root.villagedesigner.db.DatabaseHelper;
-import com.example.root.villagedesigner.extras.RandomString;
+import com.example.root.villagedesigner.sprite.GroundSprite;
+import com.example.root.villagedesigner.sprite.HouseSprite;
+import com.example.root.villagedesigner.sprite.RoadSprite;
 import com.example.root.villagedesigner.sprite.Sprite;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.UUID;
+import com.example.root.villagedesigner.sprite.TreesSprite;
+import com.example.root.villagedesigner.sprite.WaterSprite;
 
 
 public class Palette extends SurfaceView implements Runnable {
@@ -38,17 +30,13 @@ public class Palette extends SurfaceView implements Runnable {
 
     int[] tile_pos = new int[2];
 
-    Map<Integer, HashMap> houses_on_canvas;
     Context mContext;
     int drawable_id;
 
     DatabaseHelper myDb;
-    Sprite new_house;
-    Sprite ground;
+    Sprite new_sprite;
 
     float window_height, window_width;
-
-    String unique_id;
 
     int ZOM = 10;
 
@@ -57,11 +45,15 @@ public class Palette extends SurfaceView implements Runnable {
     PointF[][] position_matrix = new PointF[ZOM][ZOM];
     Sprite[][] sprite_matrix = new Sprite[ZOM][ZOM];
 
-    int TILE_WIDTH, TILE_HEIGHT, TILE_CART_DIMEN, TILE_HOUSE_OFFSET;
+    int TILE_WIDTH, TILE_HEIGHT, TILE_CART_DIMEN, TILE_TOP_OFFSET;
 
-    Sprite house_1, house_2, house_3, house_4;
+    GroundSprite ground;
+    HouseSprite house_1, house_2, house_3, house_4;
+    RoadSprite road_1, road_2, road_3, road_4, road_5, road_6, road_7, road_8, road_9, road_10;
+    TreesSprite trees_1;
+    WaterSprite water;
 
-    public Palette(Context context, int drawable_id) {
+    public Palette(Context context, int drawable_id, String type) {
         super(context);
         this.surfaceHolder = getHolder();
 
@@ -76,36 +68,36 @@ public class Palette extends SurfaceView implements Runnable {
 
         this.myDb = new DatabaseHelper(context);
 
-        this.houses_on_canvas = new TreeMap<Integer, HashMap>();
-
         this.TILE_WIDTH = 142;
         this.TILE_HEIGHT = 82;
-        this.TILE_HOUSE_OFFSET = 50;
+        this.TILE_TOP_OFFSET = 50;
         this.TILE_CART_DIMEN = TILE_WIDTH/2;
 
-        ground = new Sprite(mContext, R.drawable.ground_re);
-        ground.scaleBitmap(142, 82);
-        ground.type = "ground";
+        ground = new GroundSprite(mContext, R.drawable.ground);
 
-        house_1 = new Sprite(mContext, R.drawable.house_1);
-        house_1.scaleBitmap(142, 132);
-        house_1.type = "house";
+        house_1 = new HouseSprite(mContext, R.drawable.house_1);
+        house_2 = new HouseSprite(mContext, R.drawable.house_2);
+        house_3 = new HouseSprite(mContext, R.drawable.house_3);
+        house_4 = new HouseSprite(mContext, R.drawable.house_4);
 
-        house_2 = new Sprite(mContext, R.drawable.house_2);
-        house_2.scaleBitmap(142, 132);
-        house_2.type = "house";
+        road_1 = new RoadSprite(mContext, R.drawable.road_1);
+        road_2 = new RoadSprite(mContext, R.drawable.road_2);
+        road_3 = new RoadSprite(mContext, R.drawable.road_3);
+        road_4 = new RoadSprite(mContext, R.drawable.road_4);
+        road_5 = new RoadSprite(mContext, R.drawable.road_5);
+        road_6 = new RoadSprite(mContext, R.drawable.road_6);
+        road_7 = new RoadSprite(mContext, R.drawable.road_7);
+        road_8 = new RoadSprite(mContext, R.drawable.road_8);
+        road_9 = new RoadSprite(mContext, R.drawable.road_9);
+        road_10 = new RoadSprite(mContext, R.drawable.road_10);
 
-        house_3 = new Sprite(mContext, R.drawable.house_3);
-        house_3.scaleBitmap(142, 132);
-        house_3.type = "house";
+        trees_1 = new TreesSprite(mContext, R.drawable.trees_1);
 
-        house_4 = new Sprite(mContext, R.drawable.house_4);
-        house_4.scaleBitmap(142, 132);
-        house_4.type = "house";
+        water = new WaterSprite(mContext, R.drawable.water);
 
         for (int i = 0; i<ZOM; i++) {
             for (int j = 0; j<ZOM; j++) {
-                zorder_matrix[i][j] = (i+1)*100 - j;
+                zorder_matrix[i][j] = (i+1)*100 + j;
                 occupancy_matrix[i][j] = false;
                 PointF IsoPoint = TwoDToIso(new PointF(i*TILE_CART_DIMEN, j*TILE_CART_DIMEN));
                 position_matrix[i][j] = IsoPoint;
@@ -116,18 +108,21 @@ public class Palette extends SurfaceView implements Runnable {
         this.loadDbData();
 
         this.drawable_id = drawable_id;
-        this.unique_id = new RandomString(15).nextString();
 
-        this.new_house = new Sprite(context, drawable_id);
-        this.new_house.scaleBitmap(142, 132);
+        if (type.equals("house"))
+            this.new_sprite = new HouseSprite(context, drawable_id);
+        else if (type.equals("road"))
+            this.new_sprite = new RoadSprite(context, drawable_id);
+        else if (type.equals("trees"))
+            this.new_sprite = new TreesSprite(context, drawable_id);
+        else if (type.equals("water"))
+            this.new_sprite = new WaterSprite(context, drawable_id);
+
         this.tile_pos = this.firstAvailableTile();
         this.location = position_matrix[tile_pos[0]][tile_pos[1]];
-        this.new_house.zorder = zorder_matrix[tile_pos[0]][tile_pos[1]];
-        this.new_house.type = "house";
+        this.new_sprite.zorder = zorder_matrix[tile_pos[0]][tile_pos[1]];
 
-        this.sprite_matrix[tile_pos[0]][tile_pos[1]] = this.new_house;
-
-        this.addToTreeMap();
+        this.sprite_matrix[tile_pos[0]][tile_pos[1]] = this.new_sprite;
 
     }
 
@@ -142,7 +137,7 @@ public class Palette extends SurfaceView implements Runnable {
                 if (squareTileRect.contains(TwoDPoint.x, TwoDPoint.y)) {
                     if (!occupancy_matrix[i][j]) {
                         sprite_matrix[tile_pos[0]][tile_pos[1]] = ground;
-                        sprite_matrix[i][j] = this.new_house;
+                        sprite_matrix[i][j] = this.new_sprite;
                         tile_pos[0] = i;
                         tile_pos[1] = j;
                     }
@@ -199,8 +194,8 @@ public class Palette extends SurfaceView implements Runnable {
                     PointF point = position_matrix[i][j];
                     Sprite sprite = sprite_matrix[i][j];
                     float y_offset = 0;
-                    if (sprite.type == "house")
-                        y_offset = TILE_HOUSE_OFFSET;
+                    if (sprite.offset)
+                        y_offset = TILE_TOP_OFFSET;
                     float left = point.x - TILE_WIDTH/2, top = (point.y - y_offset);
                     canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
                 }
@@ -257,7 +252,42 @@ public class Palette extends SurfaceView implements Runnable {
                 case R.drawable.house_4:
                     sprite_matrix[tile_i][tile_j] = house_4;
                     break;
-
+                case R.drawable.road_1:
+                    sprite_matrix[tile_i][tile_j] = road_1;
+                    break;
+                case R.drawable.road_2:
+                    sprite_matrix[tile_i][tile_j] = road_2;
+                    break;
+                case R.drawable.road_3:
+                    sprite_matrix[tile_i][tile_j] = road_3;
+                    break;
+                case R.drawable.road_4:
+                    sprite_matrix[tile_i][tile_j] = road_4;
+                    break;
+                case R.drawable.road_5:
+                    sprite_matrix[tile_i][tile_j] = road_5;
+                    break;
+                case R.drawable.road_6:
+                    sprite_matrix[tile_i][tile_j] = road_6;
+                    break;
+                case R.drawable.road_7:
+                    sprite_matrix[tile_i][tile_j] = road_7;
+                    break;
+                case R.drawable.road_8:
+                    sprite_matrix[tile_i][tile_j] = road_8;
+                    break;
+                case R.drawable.road_9:
+                    sprite_matrix[tile_i][tile_j] = road_9;
+                    break;
+                case R.drawable.road_10:
+                    sprite_matrix[tile_i][tile_j] = road_10;
+                    break;
+                case R.drawable.trees_1:
+                    sprite_matrix[tile_i][tile_j] = trees_1;
+                    break;
+                case R.drawable.water:
+                    sprite_matrix[tile_i][tile_j] = water;
+                    break;
 
             }
 

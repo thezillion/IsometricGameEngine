@@ -6,10 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.Log;
 
-/**
- * Created by root on 22/6/17.
- */
-
 public class Sprite {
 
     public int height, width;
@@ -19,6 +15,7 @@ public class Sprite {
     public int zorder;
     public String type;
     public int drawable_id;
+    public boolean offset = false;
 
     Bitmap getBitmap(int id) {
         return BitmapFactory.decodeResource(mContext.getResources(), id);
@@ -42,12 +39,6 @@ public class Sprite {
 
     public void setZorder(int z) {
         this.zorder = z;
-    }
-
-    public void drawSprite(Canvas canvas, int x, int y) {
-
-        canvas.drawBitmap(bitmap_scaled, x, y, null);
-
     }
 
 }

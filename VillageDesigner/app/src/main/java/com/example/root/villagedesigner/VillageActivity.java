@@ -22,8 +22,9 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
 
         Bundle extras = getIntent().getExtras();
         int drawable_id = Integer.parseInt(extras.getString("drawable_id"));
+        String type = extras.getString("type");
 
-        P = new Palette(VillageActivity.this, drawable_id);
+        P = new Palette(VillageActivity.this, drawable_id, type);
         this.setContentView(P);
         P.setOnTouchListener(this);
     }
@@ -57,21 +58,16 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
         switch(me.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 PointF loc = new PointF(me.getX(), me.getY());
-                //P.location = loc;
                 P.getIsometricTouchLocation(loc);
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d("touch", "touched");
-                //P.placeInVillage();
                 break;
             case MotionEvent.ACTION_MOVE:
                 loc = new PointF(me.getX(), me.getY());
-                //P.location = loc;
                 P.getIsometricTouchLocation(loc);
                 break;
         }
-
-        P.updateTreeMap();
 
         return true;
     }
