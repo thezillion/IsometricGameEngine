@@ -5,6 +5,7 @@ import android.graphics.PointF;
 import android.util.Log;
 
 public abstract class Clickable extends Sprite {
+
     public PointF position;
     public Clickable(Context context, int id) {
         super(context, id);

@@ -19,6 +19,7 @@ import com.example.root.villagedesigner.sprite.HouseSprite;
 import com.example.root.villagedesigner.sprite.RoadSprite;
 import com.example.root.villagedesigner.sprite.Sprite;
 import com.example.root.villagedesigner.sprite.TreesSprite;
+import com.example.root.villagedesigner.sprite.WalkingMan;
 import com.example.root.villagedesigner.sprite.WaterSprite;
 
 
@@ -43,6 +44,7 @@ public class Palette extends SurfaceView implements Runnable {
 
     int[][] zorder_matrix = new int[ZOM][ZOM];
     boolean[][] occupancy_matrix = new boolean[ZOM][ZOM];
+    boolean[][] walkable_matrix = new boolean[ZOM][ZOM];
     PointF[][] position_matrix = new PointF[ZOM][ZOM];
     Sprite[][] sprite_matrix = new Sprite[ZOM][ZOM];
     public Clickable[] clickables_list;
@@ -56,6 +58,8 @@ public class Palette extends SurfaceView implements Runnable {
     WaterSprite water;
 
     Clickable north_west, north_east, south_west, south_east;
+
+    WalkingMan walkingMan;
 
     public Palette(Context context, int drawable_id, String type) {
         super(context);
@@ -106,6 +110,7 @@ public class Palette extends SurfaceView implements Runnable {
                 PointF IsoPoint = TwoDToIso(new PointF(i*TILE_CART_DIMEN, j*TILE_CART_DIMEN));
                 position_matrix[i][j] = IsoPoint;
                 sprite_matrix[i][j] = ground;
+                walkable_matrix[i][j] = true;
             }
         }
 
@@ -132,7 +137,7 @@ public class Palette extends SurfaceView implements Runnable {
             north_west = new Clickable(mContext, R.drawable.north_west) {
                 @Override
                 public void onClick() {
-                    Log.d("Zyngaboy", "touched clickable northwest");
+                    walkingMan.walk("nw");
                 }
             };
             north_west.setPosition(20 - (window_width/2), 20);
@@ -140,7 +145,7 @@ public class Palette extends SurfaceView implements Runnable {
             north_east = new Clickable(mContext, R.drawable.north_east) {
                 @Override
                 public void onClick() {
-                    Log.d("Zyngaboy", "touched clickable northeast");
+                    walkingMan.walk("ne");
                 }
             };
             north_east.setPosition(window_width/2 - (north_east.width+20), 20);
@@ -148,7 +153,7 @@ public class Palette extends SurfaceView implements Runnable {
             south_west = new Clickable(mContext, R.drawable.south_west) {
                 @Override
                 public void onClick() {
-                    Log.d("Zyngaboy", "touched clickable southwest");
+                    walkingMan.walk("sw");
                 }
             };
             south_west.setPosition(20 - window_width/2, window_height - (20+south_west.height));
@@ -156,7 +161,7 @@ public class Palette extends SurfaceView implements Runnable {
             south_east = new Clickable(mContext, R.drawable.south_east) {
                 @Override
                 public void onClick() {
-                    Log.d("Zyngaboy", "touched clickable southeast");
+                    walkingMan.walk("se");
                 }
             };
             south_east.setPosition(window_width/2 - (south_east.width+20), window_height - (20+south_east.height));
@@ -167,6 +172,9 @@ public class Palette extends SurfaceView implements Runnable {
             clickables_list[1] = north_east;
             clickables_list[2] = south_west;
             clickables_list[3] = south_east;
+
+            walkingMan = new WalkingMan(mContext, R.drawable.bullseye, TILE_CART_DIMEN, walkable_matrix);
+            walkingMan.setPosition(TwoDToIso(new PointF(0, 0)));
 
         }
 
@@ -241,11 +249,29 @@ public class Palette extends SurfaceView implements Runnable {
                 for (int j = 0; j<ZOM; j++) {
                     PointF point = position_matrix[i][j];
                     Sprite sprite = sprite_matrix[i][j];
-                    float y_offset = 0;
-                    if (sprite.offset)
-                        y_offset = TILE_TOP_OFFSET;
-                    float left = point.x - TILE_WIDTH/2, top = (point.y - y_offset);
-                    canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
+                    if (sprite.type.equals("ground")) {
+                        float left = point.x - TILE_WIDTH / 2, top = (point.y);
+                        canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
+                    }
+                }
+            }
+
+            for (int i = 0; i<ZOM; i++) {
+                for (int j = 0; j<ZOM; j++) {
+                    PointF point = position_matrix[i][j];
+                    Sprite sprite = sprite_matrix[i][j];
+                    if (!sprite.type.equals("ground")) {
+                        float y_offset = 0;
+                        if (sprite.offset)
+                            y_offset = TILE_TOP_OFFSET;
+                        float left = point.x - TILE_WIDTH / 2, top = (point.y - y_offset);
+                        canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
+                    }
+                    if (drawable_id == 0) {
+                        if (walkingMan.man_tile_i == i && walkingMan.man_tile_j == j) {
+                            canvas.drawBitmap(walkingMan.bitmap_scaled, walkingMan.position_iso.x, walkingMan.position_iso.y, null);
+                        }
+                    }
                 }
             }
 
@@ -345,6 +371,7 @@ public class Palette extends SurfaceView implements Runnable {
 
             }
 
+            walkable_matrix[tile_i][tile_j] = sprite_matrix[tile_i][tile_j].isWalkable;
             occupancy_matrix[tile_i][tile_j] = true;
 
         }

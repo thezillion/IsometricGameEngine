@@ -7,5 +7,6 @@ public class GroundSprite extends Sprite {
         super(context, id);
         this.type = "ground";
         this.scaleBitmap(142, 82);
+        this.isWalkable = true;
     }
 }

@@ -75,7 +75,7 @@ public class VillageActivity extends AppCompatActivity implements View.OnTouchLi
 
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("touch", "touched");
+                // Log.d("touch", "touched");
                 break;
             case MotionEvent.ACTION_MOVE:
                 loc = new PointF(me.getX(), me.getY());
