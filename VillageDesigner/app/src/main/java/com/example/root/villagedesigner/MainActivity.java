@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView trees_1;
     ImageView water;
     Button clearDBBtn;
+    Button viewMapBtn;
 
     DatabaseHelper myDb;
 
@@ -199,6 +200,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clearDatabase();
+            }
+        });
+
+        viewMapBtn = (Button) findViewById(R.id.viewMapBtn);
+
+        viewMapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startVillageActivity(0, null);
             }
         });
     }

@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 
 import com.example.root.villagedesigner.R;
 import com.example.root.villagedesigner.db.DatabaseHelper;
+import com.example.root.villagedesigner.sprite.Clickable;
 import com.example.root.villagedesigner.sprite.GroundSprite;
 import com.example.root.villagedesigner.sprite.HouseSprite;
 import com.example.root.villagedesigner.sprite.RoadSprite;
@@ -36,7 +37,7 @@ public class Palette extends SurfaceView implements Runnable {
     DatabaseHelper myDb;
     Sprite new_sprite;
 
-    float window_height, window_width;
+    public float window_height, window_width;
 
     int ZOM = 10;
 
@@ -44,6 +45,7 @@ public class Palette extends SurfaceView implements Runnable {
     boolean[][] occupancy_matrix = new boolean[ZOM][ZOM];
     PointF[][] position_matrix = new PointF[ZOM][ZOM];
     Sprite[][] sprite_matrix = new Sprite[ZOM][ZOM];
+    public Clickable[] clickables_list;
 
     int TILE_WIDTH, TILE_HEIGHT, TILE_CART_DIMEN, TILE_TOP_OFFSET;
 
@@ -52,6 +54,8 @@ public class Palette extends SurfaceView implements Runnable {
     RoadSprite road_1, road_2, road_3, road_4, road_5, road_6, road_7, road_8, road_9, road_10;
     TreesSprite trees_1;
     WaterSprite water;
+
+    Clickable north_west, north_east, south_west, south_east;
 
     public Palette(Context context, int drawable_id, String type) {
         super(context);
@@ -109,43 +113,87 @@ public class Palette extends SurfaceView implements Runnable {
 
         this.drawable_id = drawable_id;
 
-        if (type.equals("house"))
-            this.new_sprite = new HouseSprite(context, drawable_id);
-        else if (type.equals("road"))
-            this.new_sprite = new RoadSprite(context, drawable_id);
-        else if (type.equals("trees"))
-            this.new_sprite = new TreesSprite(context, drawable_id);
-        else if (type.equals("water"))
-            this.new_sprite = new WaterSprite(context, drawable_id);
+        if (drawable_id != 0) {
+            if (type.equals("house"))
+                this.new_sprite = new HouseSprite(context, drawable_id);
+            else if (type.equals("road"))
+                this.new_sprite = new RoadSprite(context, drawable_id);
+            else if (type.equals("trees"))
+                this.new_sprite = new TreesSprite(context, drawable_id);
+            else if (type.equals("water"))
+                this.new_sprite = new WaterSprite(context, drawable_id);
 
-        this.tile_pos = this.firstAvailableTile();
-        this.location = position_matrix[tile_pos[0]][tile_pos[1]];
-        this.new_sprite.zorder = zorder_matrix[tile_pos[0]][tile_pos[1]];
+            this.tile_pos = this.firstAvailableTile();
+            this.location = position_matrix[tile_pos[0]][tile_pos[1]];
+            this.new_sprite.zorder = zorder_matrix[tile_pos[0]][tile_pos[1]];
+            this.sprite_matrix[tile_pos[0]][tile_pos[1]] = this.new_sprite;
+        } else {
 
-        this.sprite_matrix[tile_pos[0]][tile_pos[1]] = this.new_sprite;
+            north_west = new Clickable(mContext, R.drawable.north_west) {
+                @Override
+                public void onClick() {
+                    Log.d("Zyngaboy", "touched clickable northwest");
+                }
+            };
+            north_west.setPosition(20 - (window_width/2), 20);
+
+            north_east = new Clickable(mContext, R.drawable.north_east) {
+                @Override
+                public void onClick() {
+                    Log.d("Zyngaboy", "touched clickable northeast");
+                }
+            };
+            north_east.setPosition(window_width/2 - (north_east.width+20), 20);
+
+            south_west = new Clickable(mContext, R.drawable.south_west) {
+                @Override
+                public void onClick() {
+                    Log.d("Zyngaboy", "touched clickable southwest");
+                }
+            };
+            south_west.setPosition(20 - window_width/2, window_height - (20+south_west.height));
+
+            south_east = new Clickable(mContext, R.drawable.south_east) {
+                @Override
+                public void onClick() {
+                    Log.d("Zyngaboy", "touched clickable southeast");
+                }
+            };
+            south_east.setPosition(window_width/2 - (south_east.width+20), window_height - (20+south_east.height));
+
+
+            clickables_list = new Clickable[4];
+            clickables_list[0] = north_west;
+            clickables_list[1] = north_east;
+            clickables_list[2] = south_west;
+            clickables_list[3] = south_east;
+
+        }
 
     }
 
     public void getIsometricTouchLocation(PointF touch) {
-        touch.x -= window_width/2;
-        PointF TwoDPoint = isoTo2d(touch);
-        boolean flag = false;
-        for (int i = 0; i<ZOM; i++) {
-            for (int j = 0 ;j<ZOM; j++) {
-                int x1 = i*TILE_CART_DIMEN, y1 = j*TILE_CART_DIMEN, x2 = (i+1)*TILE_CART_DIMEN, y2 = (j+1)*TILE_CART_DIMEN;
-                RectF squareTileRect = new RectF(x1, y1, x2, y2);
-                if (squareTileRect.contains(TwoDPoint.x, TwoDPoint.y)) {
-                    if (!occupancy_matrix[i][j]) {
-                        sprite_matrix[tile_pos[0]][tile_pos[1]] = ground;
-                        sprite_matrix[i][j] = this.new_sprite;
-                        tile_pos[0] = i;
-                        tile_pos[1] = j;
+        if (this.drawable_id != 0) {
+            touch.x -= window_width / 2;
+            PointF TwoDPoint = isoTo2d(touch);
+            boolean flag = false;
+            for (int i = 0; i < ZOM; i++) {
+                for (int j = 0; j < ZOM; j++) {
+                    int x1 = i * TILE_CART_DIMEN, y1 = j * TILE_CART_DIMEN, x2 = (i + 1) * TILE_CART_DIMEN, y2 = (j + 1) * TILE_CART_DIMEN;
+                    RectF squareTileRect = new RectF(x1, y1, x2, y2);
+                    if (squareTileRect.contains(TwoDPoint.x, TwoDPoint.y)) {
+                        if (!occupancy_matrix[i][j]) {
+                            sprite_matrix[tile_pos[0]][tile_pos[1]] = ground;
+                            sprite_matrix[i][j] = this.new_sprite;
+                            tile_pos[0] = i;
+                            tile_pos[1] = j;
+                        }
+                        flag = true;
+                        break;
                     }
-                    flag = true;
-                    break;
                 }
+                if (flag) break;
             }
-            if (flag) break;
         }
     }
 
@@ -198,6 +246,12 @@ public class Palette extends SurfaceView implements Runnable {
                         y_offset = TILE_TOP_OFFSET;
                     float left = point.x - TILE_WIDTH/2, top = (point.y - y_offset);
                     canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
+                }
+            }
+
+            if (drawable_id == 0) {
+                for (Clickable c : clickables_list) {
+                    canvas.drawBitmap(c.bitmap_scaled, c.position.x, c.position.y, null);
                 }
             }
 
@@ -298,11 +352,13 @@ public class Palette extends SurfaceView implements Runnable {
     }
 
     public void saveToDb() {
-        boolean isInserted = myDb.insertData(drawable_id, tile_pos[0], tile_pos[1]);
-        if (isInserted == true) {
-            Log.d("DbInsert", "Successful");
-        } else {
-            Log.d("DbInsert", "Unsuccessful");
+        if (drawable_id != 0) {
+            boolean isInserted = myDb.insertData(drawable_id, tile_pos[0], tile_pos[1]);
+            if (isInserted == true) {
+                Log.d("DbInsert", "Successful");
+            } else {
+                Log.d("DbInsert", "Unsuccessful");
+            }
         }
     }
 

@@ -18,6 +18,12 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="View Map"
+            android:id="@+id/viewMapBtn" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="Clear DB"
             android:id="@+id/clearDBBtn" />
