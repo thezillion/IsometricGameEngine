@@ -249,10 +249,10 @@ public class Palette extends SurfaceView implements Runnable {
                 for (int j = 0; j<ZOM; j++) {
                     PointF point = position_matrix[i][j];
                     Sprite sprite = sprite_matrix[i][j];
-                    if (sprite.type.equals("ground")) {
-                        float left = point.x - TILE_WIDTH / 2, top = (point.y);
-                        canvas.drawBitmap(sprite.bitmap_scaled, left, top, null);
-                    }
+                    //if (sprite.type.equals("ground")) {
+                    float left = point.x - TILE_WIDTH / 2, top = (point.y);
+                    canvas.drawBitmap(ground.bitmap_scaled, left, top, null);
+                    //}
                 }
             }
 

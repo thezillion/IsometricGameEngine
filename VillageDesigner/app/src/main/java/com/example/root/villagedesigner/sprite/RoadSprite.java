@@ -8,5 +8,6 @@ public class RoadSprite extends Sprite {
 
         this.type = "road";
         this.scaleBitmap(142, 82);
+        this.isWalkable = true;
     }
 }

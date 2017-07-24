@@ -16,7 +16,7 @@ public class Sprite {
     public String type;
     public int drawable_id;
     public boolean offset = false;
-    public boolean isWalkable;
+    public boolean isWalkable = false;
 
     Bitmap getBitmap(int id) {
         return BitmapFactory.decodeResource(mContext.getResources(), id);
@@ -27,7 +27,6 @@ public class Sprite {
         this.mContext = context;
         this.bitmap = this.getBitmap(id);
         this.drawable_id = id;
-        this.isWalkable = false;
 
     }
 

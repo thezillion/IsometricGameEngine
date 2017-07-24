@@ -3,6 +3,7 @@ package com.example.root.villagedesigner.sprite;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
 public class WalkingMan extends Sprite {
     int ZOM = 10;
