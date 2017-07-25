@@ -2,8 +2,12 @@ package com.example.root.villagedesigner.sprite;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WalkingMan extends Sprite {
     int ZOM = 10;
@@ -11,16 +15,29 @@ public class WalkingMan extends Sprite {
     public PointF position_cart, position_iso;
     boolean[][] walkable_matrix = new boolean[ZOM][ZOM];
     public int man_tile_i, man_tile_j;
+    public Rect srcRect = new Rect();
+    int sprite_frame;
+    HashMap<String, Integer> starting_frame = new HashMap<String, Integer>();
 
     int TILE_CART_DIMEN;
     public WalkingMan(Context context, int id, int TILE_CART_DIMEN, boolean[][] walkable_matrix) {
         super(context, id);
 
-        this.scaleBitmap(10, 10);
+        this.scaleBitmap(448, 61);
         this.TILE_CART_DIMEN = TILE_CART_DIMEN;
         this.walkable_matrix = walkable_matrix;
         this.man_tile_i = 0;
         this.man_tile_j = 0;
+
+        this.srcRect.top = 0;
+        this.srcRect.left = 0;
+        this.srcRect.bottom = 61;
+        this.srcRect.right = 28;
+
+        this.starting_frame.put("nw", 336);
+        this.starting_frame.put("ne", 224);
+        this.starting_frame.put("sw", 112);
+        this.starting_frame.put("se", 0);
     }
 
     public void setPosition(PointF point) {
@@ -90,6 +107,9 @@ public class WalkingMan extends Sprite {
             this.man_tile_i = currentTilePos[0];
             this.man_tile_j = currentTilePos[1];
         }
+        this.srcRect.left = this.starting_frame.get(dir) + (28*this.sprite_frame);
+        this.srcRect.right = this.srcRect.left + 28;
+        this.sprite_frame = (this.sprite_frame+1)%4;
     }
 
     PointF TwoDToIso(PointF pt) {

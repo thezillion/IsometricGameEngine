@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -173,7 +174,7 @@ public class Palette extends SurfaceView implements Runnable {
             clickables_list[2] = south_west;
             clickables_list[3] = south_east;
 
-            walkingMan = new WalkingMan(mContext, R.drawable.bullseye, TILE_CART_DIMEN, walkable_matrix);
+            walkingMan = new WalkingMan(mContext, R.drawable.man, TILE_CART_DIMEN, walkable_matrix);
             walkingMan.setPosition(TwoDToIso(new PointF(0, 0)));
 
         }
@@ -269,7 +270,8 @@ public class Palette extends SurfaceView implements Runnable {
                     }
                     if (drawable_id == 0) {
                         if (walkingMan.man_tile_i == i && walkingMan.man_tile_j == j) {
-                            canvas.drawBitmap(walkingMan.bitmap_scaled, walkingMan.position_iso.x, walkingMan.position_iso.y, null);
+                            //canvas.drawBitmap(walkingMan.bitmap_scaled, walkingMan.position_iso.x, walkingMan.position_iso.y, null);
+                            canvas.drawBitmap(walkingMan.bitmap_scaled, walkingMan.srcRect, new RectF(walkingMan.position_iso.x-28 + 7, walkingMan.position_iso.y-61 + 7, walkingMan.position_iso.x + 7, walkingMan.position_iso.y + 7), null);
                         }
                     }
                 }
